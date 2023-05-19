@@ -8,7 +8,7 @@ import { memoriesRoutes } from './routes/memories'
 import { authRoutes } from './routes/auth'
 
 const app = fastify({
-  // logger: true,
+  logger: true,
 })
 
 app.register(cors, {
