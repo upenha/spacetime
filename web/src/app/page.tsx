@@ -31,6 +31,10 @@ export default async function Home() {
   if (memories.length === 0) {
     return <EmptyMemories />
   }
+  function checkMimeType(url: string) {
+    const regex = /\.(mp4|mov|avi|mkv|wmv)$/
+    return regex.test(url)
+  }
 
   return (
     <div className="flex flex-col gap-10 p-8">
@@ -40,13 +44,30 @@ export default async function Home() {
             <time className="-ml-8 flex items-center gap-2 text-sm text-gray-100 before:h-px before:w-5 before:bg-gray-50">
               {dayjs(memory.createdAt).format('D[ de ]MMMM[, ]YYYY')}
             </time>
+            {checkMimeType(memory.coverUrl) ? (
+              <video
+                src={memory.coverUrl}
+                autoPlay
+                controls={true}
+                className="aspect-video w-full rounded-lg object-cover object-top"
+              />
+            ) : (
+              <Image
+                src={memory.coverUrl}
+                width={592}
+                height={280}
+                alt=""
+                className="aspect-video w-full rounded-lg object-cover"
+              />
+            )}
+            {/* <video src={memory.coverUrl} autoPlay />
             <Image
               src={memory.coverUrl}
               width={592}
               height={280}
               alt=""
               className="aspect-video w-full rounded-lg object-cover"
-            />
+            /> */}
             <p className="text-lg leading-relaxed text-gray-100">
               {memory.except}
             </p>
