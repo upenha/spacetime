@@ -28,7 +28,7 @@ export async function uploadRoutes(app: FastifyInstance) {
       process.env.SUPABASE_URL,
       process.env.SUPABASE_KEY,
     )
-    const newFile = await supabase.storage
+    await supabase.storage
       .from('public')
       .upload(`uploads/${fileId.concat(extension)}`, upload.file, {
         cacheControl: '3600',
