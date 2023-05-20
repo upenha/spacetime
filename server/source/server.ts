@@ -33,7 +33,7 @@ app.register(authRoutes)
 
 app
   .listen({
-    port: 80,
+    port: 3333,
     host: '0.0.0.0',
   })
   .then(() => {

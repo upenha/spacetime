@@ -1,11 +1,7 @@
 import { randomUUID } from 'node:crypto'
-import { extname, resolve } from 'node:path'
+import { extname } from 'node:path'
 import { FastifyInstance } from 'fastify'
-import { createWriteStream } from 'node:fs'
-import { pipeline } from 'node:stream'
-import { promisify } from 'node:util'
-
-const pump = promisify(pipeline)
+import { createClient } from '@supabase/supabase-js'
 
 export async function uploadRoutes(app: FastifyInstance) {
   app.post('/upload', async (req, res) => {
@@ -28,16 +24,24 @@ export async function uploadRoutes(app: FastifyInstance) {
 
     const fileId = randomUUID()
     const extension = extname(upload.filename)
-
-    const fileName = fileId.concat(extension)
-    const writeStream = createWriteStream(
-      resolve(__dirname, '../../uploads', fileName),
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_KEY,
     )
-    await pump(upload.file, writeStream)
+    const newFile = await supabase.storage
+      .from('public')
+      .upload(`uploads/${fileId.concat(extension)}`, upload.file, {
+        cacheControl: '3600',
+        upsert: false,
+        duplex: 'half',
+      })
 
-    const fullUrl = req.protocol.concat('://').concat(req.hostname)
-    const fileUrl = new URL(`/uploads/${fileName}`, fullUrl).toString()
-
-    return { fileUrl }
+    const {
+      data: { publicUrl },
+    } = supabase.storage
+      .from('public')
+      .getPublicUrl(`uploads/${fileId.concat(extension)}`)
+    console.log(publicUrl)
+    return { data: publicUrl }
   })
 }

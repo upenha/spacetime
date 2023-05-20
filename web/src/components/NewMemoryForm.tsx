@@ -19,8 +19,8 @@ export function NewMemoryForm() {
       const uploadFormData = new FormData()
       uploadFormData.set('file', fileToUpload)
       const uploadResponse = await api.post('upload', uploadFormData)
-
-      coverUrl = uploadResponse.data.fileUrl
+      const { data } = uploadResponse.data
+      coverUrl = data
     }
 
     const token = cookie.get('token')
